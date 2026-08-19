@@ -1,42 +1,41 @@
-# Install — motion-arch-slide
+# Install
 
-## Recommended: npx
+Install the **skill bundle** into Cursor, Claude Code, or Codex.
+
+## Quick install (recommended)
 
 ```bash
 npx motion-arch-slide
 ```
 
-From GitHub (works before npm publish):
+Published on npm: [motion-arch-slide](https://www.npmjs.com/package/motion-arch-slide)
 
-```bash
-npx github:jiruibabaya/motion-arch-slide
-```
-
-| Flag | Description |
-|---|---|
-| `--scope user` | Global skill dirs (default) |
-| `--scope project` | `.cursor/skills/` + `.claude/skills/` in current directory |
-| `--agents cursor,claude,codex` | Subset of agents |
-| `--cwd <path>` | Project root when using `--scope project` |
-
-```bash
-npx motion-arch-slide info
-npx motion-arch-slide install --scope project --agents cursor
-```
-
-Requires **Node.js 18+**. Zero npm dependencies.
+Requires **Node.js 18+**. No dependencies.
 
 ---
 
-## Skill bundle (what gets copied)
+## CLI reference
 
-| Path | Required |
-|---|---|
-| `SKILL.md` | yes |
-| `DESIGN.md` | yes |
-| `references/` | yes |
-| `templates/` | yes |
-| `slides/` | recommended |
+```bash
+npx motion-arch-slide              # install (default command)
+npx motion-arch-slide install      # same
+npx motion-arch-slide info         # show paths, no write
+npx motion-arch-slide --help
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--scope user` | ✓ | `~/.cursor/skills/` etc. |
+| `--scope project` | | `.cursor/skills/` in `--cwd` |
+| `--agents cursor,claude,codex` | all | Subset of agents |
+| `--cwd <path>` | `.` | Project root for `--scope project` |
+
+Examples:
+
+```bash
+npx motion-arch-slide --agents cursor,claude
+npx motion-arch-slide --scope project --cwd /path/to/repo
+```
 
 ---
 
@@ -50,9 +49,21 @@ Requires **Node.js 18+**. Zero npm dependencies.
 
 ---
 
-## Other methods
+## What gets copied
 
-**Git clone + npm script:**
+| Path | Required |
+|---|---|
+| `SKILL.md` | yes |
+| `DESIGN.md` | yes |
+| `references/` | yes |
+| `templates/` | yes |
+| `slides/` | recommended (reference outputs) |
+
+---
+
+## Other install methods
+
+**From a git clone:**
 
 ```bash
 git clone https://github.com/jiruibabaya/motion-arch-slide.git
@@ -60,17 +71,18 @@ cd motion-arch-slide
 npm run install-skill
 ```
 
-**Shell wrappers** (call the same Node CLI):
+**Shell wrappers** (delegate to the same Node CLI):
 
 ```powershell
+.\scripts\install-skill.ps1
 .\scripts\install-skill.ps1 -Scope project
 ```
 
 ```bash
-./scripts/install-skill.sh --scope project --agents cursor,claude
+./scripts/install-skill.sh --scope project --agents cursor
 ```
 
-**Codex skill-installer:**
+**Codex skill-installer** (alternative):
 
 ```bash
 python "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-github.py" \
@@ -81,59 +93,39 @@ python "$CODEX_HOME/skills/.system/skill-installer/scripts/install-skill-from-gi
 
 ## Verify
 
-1. Target folder contains `SKILL.md`, `references/`, `templates/`.
-2. New agent turn → `@motion-arch-slide` or ask for a slide using the skill.
-3. Agent reads `DESIGN.md`; canvas has no `backdrop-filter`.
+1. Check folder exists, e.g. `~/.cursor/skills/motion-arch-slide/SKILL.md`.
+2. New agent turn → `@motion-arch-slide`.
+3. Ask agent to create a slide; it should read `DESIGN.md` and avoid canvas `backdrop-filter`.
 
 ---
 
 ## Update
 
-Re-run `npx motion-arch-slide` (or `npm run install-skill` from a pulled clone).
+```bash
+npx motion-arch-slide
+```
+
+Overwrites previous install with the latest npm release.
 
 ---
 
-## Publish to npm (maintainers)
+## 中文
 
-**One-time:** create an [npm access token](https://www.npmjs.com/settings/~tokens) (type: **Automation** or **Publish**).
-
-**Option A — local:**
-
-```bash
-npm login
-cd motion-arch-slide
-npm publish --access public
-```
-
-**Option B — GitHub Actions:** add repo secret `NPM_TOKEN`, then run workflow **Publish npm** (Actions tab) or push tag `v1.0.0`.
-
-After publish:
+### 一键安装
 
 ```bash
 npx motion-arch-slide
 ```
 
----
-
-# 安装说明（中文）
-
-## 推荐：npx 一行安装
+### 常用参数
 
 ```bash
-npx motion-arch-slide
-# 或未发 npm 前：
-npx github:jiruibabaya/motion-arch-slide
-```
-
-```bash
+npx motion-arch-slide info
 npx motion-arch-slide --scope project
 npx motion-arch-slide --agents cursor,claude
-npx motion-arch-slide info
 ```
 
-需要 Node.js 18+。
-
-## 装到哪里
+### 装到哪里
 
 | Agent | 用户目录 | 项目目录 |
 |---|---|---|
@@ -141,6 +133,6 @@ npx motion-arch-slide info
 | Claude Code | `~/.claude/skills/motion-arch-slide/` | `.claude/skills/motion-arch-slide/` |
 | Codex | `~/.codex/skills/motion-arch-slide/` | — |
 
-## 更新
+### 更新
 
-再执行一次 `npx motion-arch-slide` 即可覆盖更新。
+再执行 `npx motion-arch-slide` 即可。

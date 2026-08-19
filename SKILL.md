@@ -6,7 +6,7 @@ description: >-
   background, and editorial text surfaces. Use when the user asks for architecture
   walkthrough slides, system diagram animations, PPT-style HTML decks, DeepSeek-style
   explainer pages, or choosing between architecture vs flowchart vs sequence diagrams.
-  Install: npx motion-arch-slide  (or npx github:jiruibabaya/motion-arch-slide)
+  Install: npx motion-arch-slide — https://www.npmjs.com/package/motion-arch-slide
 ---
 
 # Motion Arch Slide
@@ -116,19 +116,12 @@ motion-arch-slide/
 ## 安装（Agent Skill）
 
 ```bash
-# 推荐：无需 clone
 npx motion-arch-slide
-# 或未发布 npm 前：
-npx github:jiruibabaya/motion-arch-slide
-
-# 项目内共享
-npx motion-arch-slide --scope project
-
-# 预览安装路径
-npx motion-arch-slide info
+npx motion-arch-slide --scope project   # 项目内共享
+npx motion-arch-slide info              # 预览路径
 ```
 
-也可 `git clone` 后 `npm run install-skill`。详见 [INSTALL.md](INSTALL.md)。
+npm: [motion-arch-slide](https://www.npmjs.com/package/motion-arch-slide) · 详见 [INSTALL.md](INSTALL.md)
 
 | Agent | 用户目录 | 项目目录 |
 |---|---|---|
@@ -136,7 +129,7 @@ npx motion-arch-slide info
 | Claude Code | `~/.claude/skills/motion-arch-slide/` | `.claude/skills/motion-arch-slide/` |
 | Codex | `~/.codex/skills/motion-arch-slide/` | — |
 
-**调用：** `@motion-arch-slide` · **更新：** 再跑一遍 `npx motion-arch-slide`
+**调用：** `@motion-arch-slide` · **更新：** 再执行 `npx motion-arch-slide`
 
 ## 参考开源
 

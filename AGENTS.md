@@ -1,9 +1,17 @@
 # Agent instructions
 
-This repository is an **Agent Skill package**. Before creating or editing slides, read:
+Read **[SKILL.md](SKILL.md)** before creating or editing slides.
 
-1. [SKILL.md](SKILL.md) — workflow, diagram types, semantic colors
-2. [DESIGN.md](DESIGN.md) — hard constraints and QA checklist
-3. [templates/slide-architecture.html](templates/slide-architecture.html) — copy, do not rewrite from scratch
+| Step | File |
+|---|---|
+| Workflow & diagram types | [SKILL.md](SKILL.md) |
+| Hard constraints | [DESIGN.md](DESIGN.md) |
+| Template to copy | [templates/slide-architecture.html](templates/slide-architecture.html) |
 
-Install for your runtime → [INSTALL.md](INSTALL.md)
+**Install this skill:**
+
+```bash
+npx motion-arch-slide
+```
+
+Details: [INSTALL.md](INSTALL.md) · npm: [motion-arch-slide](https://www.npmjs.com/package/motion-arch-slide)
