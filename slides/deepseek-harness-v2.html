@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeepSeek Harness 架构拆解</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --c-entry: #0e7490;
+      --c-entry-soft: #ecfeff;
+      --c-core: #ea580c;
+      --c-core-soft: #fff7ed;
+      --c-cap: #059669;
+      --c-cap-soft: #ecfdf5;
+      --c-muted: #64748b;
+      --c-text: #0f172a;
+      --c-sub: #475569;
+      --c-border: #e2e8f0;
+      --c-grid: rgba(148, 163, 184, 0.14);
+      --c-surface: #f1f5f9;
+      --c-panel: #ffffff;
+      --shadow-node: 0 4px 24px rgba(15, 23, 42, 0.06);
+      --left-w: clamp(300px, 34vw, 480px);
+      --bar-h: clamp(52px, 7vh, 72px);
+      --pad: clamp(20px, 2.8vw, 40px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "IBM Plex Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background: var(--c-surface);
+      color: var(--c-text);
+    }
+
+    /* ── 全屏幻灯片网格 ── */
+    .deck {
+      display: grid;
+      grid-template-columns: var(--left-w) 1fr;
+      grid-template-rows: 1fr var(--bar-h);
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    /* ── 左栏叙事 ── */
+    .narrative {
+      grid-column: 1;
+      grid-row: 1;
+      padding: var(--pad);
+      padding-right: calc(var(--pad) * 0.75);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border-right: 1px solid var(--c-border);
+      position: relative;
+    }
+
+    .narrative::after {
+      content: "";
+      position: absolute;
+      top: 10%;
+      right: 0;
+      width: 1px;
+      height: 80%;
+      background: linear-gradient(180deg, transparent, var(--c-border), transparent);
+    }
+
+    .eyebrow {
+      font-size: clamp(0.65rem, 0.9vw, 0.75rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--c-entry);
+      margin-bottom: clamp(12px, 2vh, 20px);
+    }
+
+    .narrative h1 {
+      font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: clamp(16px, 2.5vh, 28px);
+    }
+
+    .narrative .lead {
+      font-size: clamp(0.88rem, 1.25vw, 1.05rem);
+      line-height: 1.75;
+      color: var(--c-sub);
+      max-width: 36em;
+    }
+
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.5rem;
+      margin-top: clamp(20px, 3vh, 32px);
+      font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+      font-weight: 600;
+      color: var(--c-entry);
+    }
+
+    .pipeline .sep {
+      color: #cbd5e1;
+      font-weight: 400;
+    }
+
+    /* ── 右栏架构图 ── */
+    .stage {
+      grid-column: 2;
+      grid-row: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background:
+        repeating-linear-gradient(0deg, var(--c-grid) 0 1px, transparent 1px 32px),
+        repeating-linear-gradient(90deg, var(--c-grid) 0 1px, transparent 1px 32px),
+        linear-gradient(180deg, #f0f9ff 0%, #f8fafc 45%, #f1f5f9 100%);
+    }
+
+    .stage-head {
+      flex: 0 0 auto;
+      text-align: center;
+      padding: clamp(14px, 2vh, 22px) var(--pad) clamp(6px, 1vh, 10px);
+    }
+
+    .stage-head h2 {
+      font-size: clamp(0.82rem, 1.15vw, 0.95rem);
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .stage-head p {
+      font-size: clamp(0.68rem, 0.95vw, 0.78rem);
+      color: var(--c-muted);
+      margin-top: 4px;
+    }
+
+    .canvas {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      margin: 0 clamp(12px, 1.5vw, 24px) clamp(8px, 1vh, 16px);
+    }
+
+    .canvas svg.arrows {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* ── 入口分组框 ── */
+    .group-shell {
+      position: absolute;
+      border: 1.5px dashed rgba(14, 116, 144, 0.45);
+      border-radius: 14px;
+      background: rgba(236, 254, 255, 0.35);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .group-shell .label {
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      padding: 0 8px;
+      background: #f0f9ff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--c-entry);
+    }
+
+    /* ── 节点 ── */
+    .node {
+      position: absolute;
+      z-index: 3;
+      transform: translate(-50%, -50%);
+      border-radius: 12px;
+      padding: clamp(8px, 1vh, 12px) clamp(10px, 1.2vw, 14px);
+      background: var(--c-panel);
+      box-shadow: var(--shadow-node);
+      min-height: 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .node::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 14px;
+      background: var(--c-panel);
+      z-index: -1;
+    }
+
+    .node .tag {
+      font-size: clamp(0.58rem, 0.75vw, 0.65rem);
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .node .title {
+      font-size: clamp(0.72rem, 1vw, 0.82rem);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .node .sub {
+      font-size: clamp(0.58rem, 0.78vw, 0.65rem);
+      color: var(--c-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .node.entry {
+      width: clamp(96px, 10vw, 118px);
+      border: 1.5px solid var(--c-entry);
+      background: linear-gradient(180deg, #ffffff 0%, var(--c-entry-soft) 100%);
+    }
+    .node.entry .tag { color: var(--c-entry); }
+
+    .node.core {
+      width: clamp(220px, 24vw, 280px);
+      min-height: 88px;
+      padding: clamp(12px, 1.5vh, 16px) clamp(14px, 1.5vw, 18px);
+      border: 2px solid var(--c-core);
+      background: linear-gradient(180deg, var(--c-core-soft) 0%, #ffffff 100%);
+    }
+    .node.core .tag { color: var(--c-core); }
+    .node.core .title { font-size: clamp(0.85rem, 1.15vw, 1rem); }
+
+    .node.client {
+      width: clamp(118px, 13vw, 142px);
+      border: 1.5px solid #94a3b8;
+    }
+    .node.client .tag { color: var(--c-muted); }
+
+    .node.cap {
+      width: clamp(130px, 14vw, 158px);
+      border: 1.5px solid var(--c-cap);
+      background: linear-gradient(180deg, #ffffff 0%, var(--c-cap-soft) 100%);
+    }
+    .node.cap .tag { color: var(--c-cap); }
+
+    .node.log {
+      width: clamp(240px, 28vw, 300px);
+      min-height: 72px;
+      border: 1.5px solid var(--c-cap);
+      background: linear-gradient(180deg, var(--c-cap-soft) 0%, #ffffff 100%);
+    }
+    .node.log .tag { color: var(--c-cap); }
+
+    /* ── 连线动画 ── */
+    .flow-entry, .flow-core, .flow-cap, .flow-loop {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .flow-entry {
+      stroke: var(--c-entry);
+      stroke-dasharray: 6 6;
+      marker-end: url(#arrow-entry);
+    }
+
+    .flow-core {
+      stroke: var(--c-core);
+      stroke-dasharray: 6 6;
+      marker-end: url(#arrow-core);
+    }
+
+    .flow-cap {
+      stroke: var(--c-cap);
+      stroke-dasharray: 6 6;
+      marker-end: url(#arrow-cap);
+    }
+
+    .flow-loop {
+      stroke: var(--c-cap);
+      stroke-dasharray: 5 7;
+      marker-end: url(#arrow-cap);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .flow-entry { animation: dash 0.75s linear infinite; }
+      .flow-core { animation: dash 0.9s linear infinite; }
+      .flow-cap { animation: dash 0.8s linear infinite; }
+      .flow-loop { animation: dash-loop 1s linear infinite; }
+    }
+
+    @keyframes dash { to { stroke-dashoffset: -12; } }
+    @keyframes dash-loop { to { stroke-dashoffset: -12; } }
+
+    body.paused .flow-entry,
+    body.paused .flow-core,
+    body.paused .flow-cap,
+    body.paused .flow-loop {
+      animation-play-state: paused;
+    }
+
+    .dot {
+      filter: drop-shadow(0 0 5px currentColor);
+    }
+
+    /* ── 控制条 ── */
+    .controls {
+      position: absolute;
+      top: clamp(10px, 1.5vh, 16px);
+      right: clamp(10px, 1.5vw, 16px);
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+    }
+
+    .controls button {
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(6px);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font: inherit;
+      font-size: 0.72rem;
+      color: var(--c-muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .controls button:hover {
+      border-color: var(--c-entry);
+      color: var(--c-entry);
+    }
+
+    /* ── 底栏章节 ── */
+    .chapters {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      border-top: 1px solid var(--c-border);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+    }
+
+    .chapters button {
+      appearance: none;
+      border: none;
+      border-right: 1px solid #f1f5f9;
+      background: transparent;
+      padding: 0 clamp(6px, 1vw, 12px);
+      font: inherit;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: var(--c-muted);
+      transition: background 0.2s;
+    }
+
+    .chapters button:last-child { border-right: none; }
+
+    .chapters button .num {
+      font-size: clamp(0.62rem, 0.85vw, 0.72rem);
+      font-weight: 700;
+      color: #94a3b8;
+    }
+
+    .chapters button .label {
+      font-size: clamp(0.58rem, 0.8vw, 0.68rem);
+      line-height: 1.2;
+    }
+
+    .chapters button[aria-current="true"] {
+      background: linear-gradient(180deg, #ecfeff 0%, #ffffff 100%);
+    }
+
+    .chapters button[aria-current="true"] .num {
+      color: var(--c-entry);
+    }
+
+    .chapters button[aria-current="true"] .label {
+      color: var(--c-text);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <aside class="narrative">
+      <div class="eyebrow">Architecture Walkthrough</div>
+      <h1>DeepSeek Harness<br />架构拆解</h1>
+      <p class="lead">
+        用 20 分钟把一次完整请求怎么走讲清楚：系统怎么拼起来，
+        Agent、模型、工具、Session、Web 怎么连在一起。
+      </p>
+      <div class="pipeline">
+        <span>入口</span><span class="sep">→</span>
+        <span>组装</span><span class="sep">→</span>
+        <span>运行</span><span class="sep">→</span>
+        <span>记录</span><span class="sep">→</span>
+        <span>呈现</span>
+      </div>
+    </aside>
+
+    <section class="stage">
+      <div class="controls">
+        <button id="pauseBtn" type="button" title="Space">⏸ 暂停</button>
+        <button id="fsBtn" type="button" title="F">⛶ 全屏</button>
+      </div>
+
+      <header class="stage-head">
+        <h2>整体视图 / 多种入口，共用一套运行时</h2>
+        <p>Entry → Runtime → Capabilities → Session Log → Clients</p>
+      </header>
+
+      <div class="canvas" id="canvas">
+        <div class="group-shell" id="entryGroup" hidden>
+          <span class="label">ENTRY POINTS</span>
+        </div>
+
+        <div class="node entry" data-id="web" style="left:22%;top:16%">
+          <div class="tag">WEB</div>
+          <div class="title">浏览器入口</div>
+        </div>
+        <div class="node entry" data-id="headless" style="left:38%;top:16%">
+          <div class="tag">HEADLESS</div>
+          <div class="title">一次性任务</div>
+        </div>
+        <div class="node entry" data-id="acp" style="left:54%;top:16%">
+          <div class="tag">ACP</div>
+          <div class="title">自动化客户端</div>
+        </div>
+        <div class="node entry" data-id="sdk" style="left:70%;top:16%">
+          <div class="tag">SDK</div>
+          <div class="title">程序化调用</div>
+        </div>
+
+        <div class="node client" data-id="clients" style="left:14%;top:50%">
+          <div class="tag">CLIENTS</div>
+          <div class="title">UI / Automation</div>
+          <div class="sub">状态 · 控制 · 呈现</div>
+        </div>
+
+        <div class="node core" data-id="harness" style="left:50%;top:48%">
+          <div class="tag">DEEPSEEK HARNESS</div>
+          <div class="title">Agent 运行时</div>
+          <div class="sub">组装 · 执行 · 记录 · 呈现</div>
+        </div>
+
+        <div class="node cap" data-id="llm" style="left:86%;top:40%">
+          <div class="tag">LLM ADAPTERS</div>
+          <div class="title">模型提供方</div>
+        </div>
+        <div class="node cap" data-id="caps" style="left:86%;top:58%">
+          <div class="tag">CAPABILITIES</div>
+          <div class="sub">Tool · FS · Shell · Subagent</div>
+        </div>
+
+        <div class="node log" data-id="session" style="left:50%;top:84%">
+          <div class="tag">SESSION EVENT LOG</div>
+          <div class="title">持久化运行事实</div>
+          <div class="sub">唯一真相源 · 回放 · 分叉 · 审计</div>
+        </div>
+
+        <svg class="arrows" id="arrows" aria-hidden="true">
+          <defs>
+            <marker id="arrow-entry" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1 L8 5 L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+            <marker id="arrow-core" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1 L8 5 L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+            <marker id="arrow-cap" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1 L8 5 L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+          </defs>
+          <g id="paths"></g>
+          <g id="dots"></g>
+        </svg>
+      </div>
+    </section>
+
+    <nav class="chapters" aria-label="章节">
+      <button type="button" aria-current="true"><span class="num">01</span><span class="label">整体架构</span></button>
+      <button type="button"><span class="num">02</span><span class="label">组装机制</span></button>
+      <button type="button"><span class="num">03</span><span class="label">请求流转</span></button>
+      <button type="button"><span class="num">04</span><span class="label">运行控制</span></button>
+      <button type="button"><span class="num">05</span><span class="label">Web 产品</span></button>
+      <button type="button"><span class="num">06</span><span class="label">能力接入</span></button>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById("canvas");
+      const svg = document.getElementById("arrows");
+      const pathsG = document.getElementById("paths");
+      const dotsG = document.getElementById("dots");
+      const entryGroup = document.getElementById("entryGroup");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function nodeBox(id) {
+        const el = canvas.querySelector('[data-id="' + id + '"]');
+        const cRect = canvas.getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        const pad = 6;
+        return {
+          cx: r.left + r.width / 2 - cRect.left,
+          cy: r.top + r.height / 2 - cRect.top,
+          top: r.top - cRect.top,
+          bottom: r.bottom - cRect.top,
+          left: r.left - cRect.left,
+          right: r.right - cRect.left,
+          width: r.width,
+          height: r.height,
+          outBottom: { x: r.left + r.width / 2 - cRect.left, y: r.bottom - cRect.top + pad },
+          inTop: { x: r.left + r.width / 2 - cRect.left, y: r.top - cRect.top - pad },
+          outRight: { x: r.right - cRect.left + pad, y: r.top + r.height / 2 - cRect.top },
+          inLeft: { x: r.left - cRect.left - pad, y: r.top + r.height / 2 - cRect.top },
+        };
+      }
+
+      /** 正交折线 + 圆角（step-round 简化版） */
+      function stepDown(x1, y1, x2, y2, r) {
+        r = Math.min(r || 10, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2);
+        const midY = y1 + (y2 - y1) * 0.42;
+        if (Math.abs(x2 - x1) < 4) {
+          return "M " + x1 + " " + y1 + " L " + x2 + " " + y2;
+        }
+        const dirX = x2 > x1 ? 1 : -1;
+        const dirY = y2 > y1 ? 1 : -1;
+        return [
+          "M", x1, y1,
+          "L", x1, midY - r * dirY,
+          "Q", x1, midY, x1 + r * dirX, midY,
+          "L", x2 - r * dirX, midY,
+          "Q", x2, midY, x2, midY + r * dirY,
+          "L", x2, y2,
+        ].join(" ");
+      }
+
+      function stepHorizontal(x1, y1, x2, y2, r) {
+        r = Math.min(r || 10, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2);
+        if (Math.abs(y2 - y1) < 4) {
+          return "M " + x1 + " " + y1 + " L " + x2 + " " + y2;
+        }
+        const midX = x1 + (x2 - x1) * 0.55;
+        const dirX = x2 > x1 ? 1 : -1;
+        const dirY = y2 > y1 ? 1 : -1;
+        return [
+          "M", x1, y1,
+          "L", midX - r * dirX, y1,
+          "Q", midX, y1, midX, y1 + r * dirY,
+          "L", midX, y2 - r * dirY,
+          "Q", midX, y2, midX + r * dirX, y2,
+          "L", x2, y2,
+        ].join(" ");
+      }
+
+      function addPath(d, cls) {
+        const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute("d", d);
+        p.setAttribute("class", cls);
+        pathsG.appendChild(p);
+        return p;
+      }
+
+      function addDot(pathD, color, begin, dur, id) {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("r", "4.5");
+        c.setAttribute("fill", color);
+        c.setAttribute("class", "dot");
+        const anim = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+        anim.setAttribute("dur", dur + "s");
+        anim.setAttribute("repeatCount", "indefinite");
+        anim.setAttribute("path", pathD);
+        if (begin) anim.setAttribute("begin", begin);
+        if (id) anim.setAttribute("id", id);
+        c.appendChild(anim);
+        dotsG.appendChild(c);
+      }
+
+      function layoutEntryGroup() {
+        const ids = ["web", "headless", "acp", "sdk"];
+        const boxes = ids.map(nodeBox);
+        const left = Math.min(...boxes.map((b) => b.left)) - 14;
+        const right = Math.max(...boxes.map((b) => b.right)) + 14;
+        const top = Math.min(...boxes.map((b) => b.top)) - 22;
+        const bottom = Math.max(...boxes.map((b) => b.bottom)) + 14;
+        entryGroup.hidden = false;
+        entryGroup.style.left = left + "px";
+        entryGroup.style.top = top + "px";
+        entryGroup.style.width = right - left + "px";
+        entryGroup.style.height = bottom - top + "px";
+      }
+
+      function layout() {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+
+        pathsG.innerHTML = "";
+        dotsG.innerHTML = "";
+        layoutEntryGroup();
+
+        const web = nodeBox("web");
+        const headless = nodeBox("headless");
+        const acp = nodeBox("acp");
+        const sdk = nodeBox("sdk");
+        const clients = nodeBox("clients");
+        const harness = nodeBox("harness");
+        const llm = nodeBox("llm");
+        const caps = nodeBox("caps");
+        const session = nodeBox("session");
+
+        [web, headless, acp, sdk].forEach(function (e) {
+          addPath(
+            stepDown(e.outBottom.x, e.outBottom.y, harness.inTop.x, harness.inTop.y, 12),
+            "flow-entry"
+          );
+        });
+
+        addPath(
+          stepHorizontal(clients.outRight.x, clients.cy, harness.inLeft.x, harness.cy, 10),
+          "flow-entry"
+        );
+
+        addPath(
+          stepHorizontal(harness.outRight.x, harness.cy - 14, llm.inLeft.x, llm.cy, 10),
+          "flow-cap"
+        );
+
+        addPath(
+          stepHorizontal(harness.outRight.x, harness.cy + 14, caps.inLeft.x, caps.cy, 10),
+          "flow-cap"
+        );
+
+        addPath(
+          stepDown(harness.outBottom.x, harness.outBottom.y, session.inTop.x, session.inTop.y, 10),
+          "flow-core"
+        );
+
+        const loopY = session.cy;
+        const loopPath = [
+          "M", session.left + 24, loopY,
+          "C", session.left - 50, loopY,
+          clients.left - 36, clients.cy,
+          clients.inLeft.x, clients.cy,
+        ].join(" ");
+        addPath(loopPath, "flow-loop");
+
+        if (!reduced) {
+          const hop1 = stepDown(web.outBottom.x, web.outBottom.y, harness.inTop.x, harness.inTop.y, 12);
+          addDot(hop1, "#0e7490", "0s", 1.3, "dot1");
+
+          const hop2 = stepDown(harness.outBottom.x, harness.outBottom.y, session.inTop.x, session.inTop.y, 10);
+          addDot(hop2, "#ea580c", "dot1.end+0.25s", 0.95, "dot2");
+
+          addDot(loopPath, "#059669", "dot2.end+0.2s", 1.5, "dot3");
+        }
+      }
+
+      layout();
+      const ro = new ResizeObserver(function () { layout(); });
+      ro.observe(canvas);
+
+      let paused = false;
+      const pauseBtn = document.getElementById("pauseBtn");
+      pauseBtn.addEventListener("click", togglePause);
+
+      function togglePause() {
+        paused = !paused;
+        document.body.classList.toggle("paused", paused);
+        paused ? svg.pauseAnimations() : svg.unpauseAnimations();
+        pauseBtn.textContent = paused ? "▶ 继续" : "⏸ 暂停";
+      }
+
+      document.getElementById("fsBtn").addEventListener("click", function () {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(function () {});
+        } else {
+          document.exitFullscreen();
+        }
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.code === "Space" && e.target === document.body) {
+          e.preventDefault();
+          togglePause();
+        }
+        if (e.key === "f" || e.key === "F") {
+          document.getElementById("fsBtn").click();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
