@@ -2,6 +2,8 @@
 
 # motion-arch-slide
 
+**English** · [**简体中文**](README.zh-CN.md)
+
 **Full-viewport HTML slides with animated architecture diagrams — zero build, open in browser.**
 
 CSS dashed flows · SVG light-dot journeys · semantic node colors · Cursor Agent Skill
@@ -9,10 +11,10 @@ CSS dashed flows · SVG light-dot journeys · semantic node colors · Cursor Age
 <br />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-0e7490?style=for-the-badge)](LICENSE)
-[![HTML](https://img.shields.io/badge/stack-HTML%20%2B%20CSS%20%2B%20SVG-ea580c?style=for-the-badge)](slides/deepseek-harness-v3.html)
+[![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-ea580c?style=for-the-badge)](https://jiruibabaya.github.io/motion-arch-slide/)
 [![Cursor Skill](https://img.shields.io/badge/Cursor-Skill-059669?style=for-the-badge)](SKILL.md)
 
-[Live demo (raw)](slides/deepseek-harness-v3.html) · [Design spec](DESIGN.md) · [Agent workflow](SKILL.md)
+[**Live demo**](https://jiruibabaya.github.io/motion-arch-slide/demo/deepseek-harness-v3.html) · [Design spec](DESIGN.md) · [Agent workflow](SKILL.md)
 
 </div>
 
@@ -66,9 +68,8 @@ cd motion-arch-slide
 
 Open the reference slide in any modern browser:
 
-```text
-slides/deepseek-harness-v3.html
-```
+- **Online:** [GitHub Pages demo](https://jiruibabaya.github.io/motion-arch-slide/demo/deepseek-harness-v3.html)
+- **Local file:** `slides/deepseek-harness-v3.html`
 
 Or serve locally:
 
@@ -126,6 +127,21 @@ motion-arch-slide/
 | Pods / regions / hosts | Deployment | same |
 
 Default for backend / agent / platform talks: **architecture slide**.
+
+---
+
+## GitHub Pages
+
+Site source: **`docs/`**, deployed by [GitHub Actions](.github/workflows/pages.yml) on push to `main`.
+
+| URL | Content |
+|---|---|
+| [jiruibabaya.github.io/motion-arch-slide/](https://jiruibabaya.github.io/motion-arch-slide/) | Bilingual landing (EN / 中文 toggle) |
+| […/demo/deepseek-harness-v3.html](https://jiruibabaya.github.io/motion-arch-slide/demo/deepseek-harness-v3.html) | Reference slide |
+
+First-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+
+After updating `slides/deepseek-harness-v3.html`, copy to `docs/demo/` before push (or re-run deploy).
 
 ---
 
