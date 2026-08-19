@@ -20,6 +20,10 @@
   },
   "license": "MIT",
   "author": "jiruibabaya",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "type": "commonjs",
   "bin": {
     "motion-arch-slide": "bin/motion-arch-slide.js"

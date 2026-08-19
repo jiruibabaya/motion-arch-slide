@@ -95,12 +95,23 @@ Re-run `npx motion-arch-slide` (or `npm run install-skill` from a pulled clone).
 
 ## Publish to npm (maintainers)
 
+**One-time:** create an [npm access token](https://www.npmjs.com/settings/~tokens) (type: **Automation** or **Publish**).
+
+**Option A — local:**
+
 ```bash
 npm login
+cd motion-arch-slide
 npm publish --access public
 ```
 
-Then users can run `npx motion-arch-slide` without the `github:` prefix.
+**Option B — GitHub Actions:** add repo secret `NPM_TOKEN`, then run workflow **Publish npm** (Actions tab) or push tag `v1.0.0`.
+
+After publish:
+
+```bash
+npx motion-arch-slide
+```
 
 ---
 
