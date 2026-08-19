@@ -68,7 +68,7 @@ cd motion-arch-slide
 
 Open the reference slide in any modern browser:
 
-- **Online:** [GitHub Pages demo](https://jiruibabaya.github.io/motion-arch-slide/demo/deepseek-harness-v3.html)
+- **Online:** [GitHub Pages demo](https://jiruibabaya.github.io/motion-arch-slide/demo.html)
 - **Local file:** `slides/deepseek-harness-v3.html`
 
 Or serve locally:
@@ -132,16 +132,22 @@ Default for backend / agent / platform talks: **architecture slide**.
 
 ## GitHub Pages
 
-Site source: **`docs/`**, deployed by [GitHub Actions](.github/workflows/pages.yml) on push to `main`.
+Site source: **`docs/`** (also auto-synced to **`gh-pages`** branch on every push).
+
+**If you see 404 — enable Pages once:**
+
+1. Open repo **Settings → Pages**
+2. **Build and deployment → Source:** Deploy from a branch
+3. **Branch:** `gh-pages` · **Folder:** `/ (root)` → Save
+
+(Alternative: branch `main`, folder `/docs`.)
 
 | URL | Content |
 |---|---|
-| [jiruibabaya.github.io/motion-arch-slide/](https://jiruibabaya.github.io/motion-arch-slide/) | Bilingual landing (EN / 中文 toggle) |
-| […/demo/deepseek-harness-v3.html](https://jiruibabaya.github.io/motion-arch-slide/demo/deepseek-harness-v3.html) | Reference slide |
+| [jiruibabaya.github.io/motion-arch-slide/](https://jiruibabaya.github.io/motion-arch-slide/) | Bilingual landing (default **中文**) |
+| […/demo.html](https://jiruibabaya.github.io/motion-arch-slide/demo.html) | Reference slide |
 
-First-time setup: repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-
-After updating `slides/deepseek-harness-v3.html`, copy to `docs/demo/` before push (or re-run deploy).
+After updating `slides/deepseek-harness-v3.html`, run `scripts/sync-pages-demo.bat` and push.
 
 ---
 

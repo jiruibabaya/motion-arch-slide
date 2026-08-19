@@ -164,10 +164,8 @@
     }
     footer a { color: var(--c-entry); }
     [data-lang="zh"] { display: none; }
-    html.lang-zh [data-lang="en"] { display: none; }
-    html.lang-zh [data-lang="zh"] { display: revert; }
-    html.lang-zh .lang button[data-set="zh"],
-    html.lang-en .lang button[data-set="en"] { /* active via JS */ }
+    body.lang-zh [data-lang="en"] { display: none; }
+    body.lang-zh [data-lang="zh"] { display: revert; }
   </style>
 </head>
 <body class="lang-zh">
@@ -197,8 +195,8 @@
       </p>
 
       <div class="actions">
-        <a class="btn btn-primary" href="demo/deepseek-harness-v3.html" data-lang="en">Open live demo →</a>
-        <a class="btn btn-primary" href="demo/deepseek-harness-v3.html" data-lang="zh">打开在线演示 →</a>
+        <a class="btn btn-primary" href="demo.html" data-lang="en">Open live demo →</a>
+        <a class="btn btn-primary" href="demo.html" data-lang="zh">打开在线演示 →</a>
         <a class="btn btn-secondary" href="https://github.com/jiruibabaya/motion-arch-slide" target="_blank" rel="noopener">GitHub</a>
         <a class="btn btn-secondary" href="https://github.com/jiruibabaya/motion-arch-slide/blob/main/README.md" data-lang="en">Docs (EN)</a>
         <a class="btn btn-secondary" href="https://github.com/jiruibabaya/motion-arch-slide/blob/main/README.zh-CN.md" data-lang="zh">文档 (中文)</a>

@@ -268,7 +268,21 @@ motion-arch-slide/
 
 
 
-站点目录：**`docs/`**，推送到 `main` 后由 [GitHub Actions](.github/workflows/pages.yml) 自动部署。
+站点已推送到 **`gh-pages`** 分支（每次 push `main` 也会由 Actions 同步）。
+
+
+
+**若访问 404，请在 GitHub 启用 Pages（只需一次）：**
+
+
+
+1. 打开仓库 **Settings → Pages**
+2. **Build and deployment → Source:** Deploy from a branch
+3. **Branch:** `gh-pages` · **Folder:** `/ (root)` → Save
+
+
+
+（也可选 branch `main`、folder `/docs`。）
 
 
 
@@ -276,17 +290,13 @@ motion-arch-slide/
 
 |---|---|
 
-| [jiruibabaya.github.io/motion-arch-slide/](https://jiruibabaya.github.io/motion-arch-slide/) | 双语首页（EN / 中文切换） |
+| [jiruibabaya.github.io/motion-arch-slide/](https://jiruibabaya.github.io/motion-arch-slide/) | 双语首页（**默认中文**） |
 
-| […/demo/deepseek-harness-v3.html](https://jiruibabaya.github.io/motion-arch-slide/demo/deepseek-harness-v3.html) | 参考 slide |
-
-
-
-首次启用：仓库 **Settings → Pages → Build and deployment → Source: GitHub Actions**。
+| […/demo.html](https://jiruibabaya.github.io/motion-arch-slide/demo.html) | 参考 slide |
 
 
 
-更新 `slides/` 成片后，记得同步复制到 `docs/demo/` 再 push（或运行 `scripts/sync-pages-demo.bat`）。
+更新 `slides/` 成片后运行 `scripts/sync-pages-demo.bat` 再 push。
 
 
 
