@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>motion-arch-slide · 全屏架构讲解页</title>
+  <meta name="description" content="全屏 HTML 架构讲解页：CSS/SVG 动画 + Cursor Agent Skill。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --c-entry: #0e7490;
+      --c-core: #ea580c;
+      --c-cap: #059669;
+      --c-text: #0f172a;
+      --c-sub: #475569;
+      --grid-bg: #f4f7fb;
+      --surface: rgba(255, 255, 255, 0.78);
+      --surface-soft: rgba(255, 255, 255, 0.55);
+      --radius: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: "IBM Plex Sans", "IBM Plex Sans SC", system-ui, sans-serif;
+      color: var(--c-text);
+      background: var(--grid-bg);
+      background-image:
+        repeating-linear-gradient(to right, rgba(148,163,184,.2) 0, rgba(148,163,184,.2) 1px, transparent 1px, transparent 19px, rgba(148,163,184,.12) 19px, rgba(148,163,184,.12) 20px, transparent 20px, transparent 99px, rgba(148,163,184,.2) 99px, rgba(148,163,184,.2) 100px, transparent 100px),
+        repeating-linear-gradient(to bottom, rgba(148,163,184,.2) 0, rgba(148,163,184,.2) 1px, transparent 1px, transparent 19px, rgba(148,163,184,.12) 19px, rgba(148,163,184,.12) 20px, transparent 20px, transparent 99px, rgba(148,163,184,.2) 99px, rgba(148,163,184,.2) 100px, transparent 100px);
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: clamp(32px, 6vw, 72px) clamp(20px, 4vw, 40px);
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .brand {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .lang {
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      box-shadow: 0 0 0 1px rgba(148,163,184,.25);
+    }
+    .lang button {
+      border: 0;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--c-sub);
+      cursor: pointer;
+    }
+    .lang button.active {
+      background: var(--surface);
+      color: var(--c-text);
+      box-shadow: 0 1px 8px rgba(15,23,42,.06);
+    }
+    .hero {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: clamp(24px, 4vw, 40px);
+      box-shadow: 0 4px 24px rgba(0,0,0,.05);
+    }
+    .tagline {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--c-entry);
+      background: rgba(236,254,255,.75);
+    }
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      line-height: 1.15;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      line-height: 1.65;
+      color: var(--c-sub);
+      max-width: 42em;
+      margin-bottom: 28px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      text-decoration: none;
+      transition: box-shadow .15s;
+    }
+    .btn-primary {
+      color: #fff;
+      background: var(--c-core);
+      box-shadow: 0 0 0 1px rgba(234,88,12,.3);
+    }
+    .btn-primary:hover { box-shadow: 0 0 0 2px rgba(234,88,12,.45); }
+    .btn-secondary {
+      color: var(--c-text);
+      background: var(--surface);
+      box-shadow: 0 0 0 1px rgba(148,163,184,.35);
+    }
+    .btn-secondary:hover { box-shadow: 0 0 0 2px rgba(148,163,184,.5); }
+    .preview {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(15,23,42,.08);
+      line-height: 0;
+    }
+    .preview img { width: 100%; height: auto; display: block; }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .feat {
+      padding: 20px;
+      border-radius: 12px;
+      background: var(--surface-soft);
+    }
+    .feat strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.875rem;
+    }
+    .feat span { font-size: 0.8125rem; color: var(--c-sub); line-height: 1.5; }
+    .feat.entry strong { color: var(--c-entry); }
+    .feat.core strong { color: var(--c-core); }
+    .feat.cap strong { color: var(--c-cap); }
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: var(--c-sub);
+    }
+    footer a { color: var(--c-entry); }
+    [data-lang="zh"] { display: none; }
+    body.lang-zh [data-lang="en"] { display: none; }
+    body.lang-zh [data-lang="zh"] { display: revert; }
+  </style>
+</head>
+<body class="lang-zh">
+  <div class="wrap">
+    <header>
+      <div class="brand">motion-arch-slide</div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-set="en">English</button>
+        <button type="button" data-set="zh" class="active">中文</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <span class="tagline" data-lang="en">HTML · CSS · SVG · Zero build</span>
+      <span class="tagline" data-lang="zh">HTML · CSS · SVG · 零构建</span>
+
+      <h1 data-lang="en">Animated architecture slides for screen recording</h1>
+      <h1 data-lang="zh">面向录屏的全屏架构讲解页</h1>
+
+      <p class="lead" data-lang="en">
+        Single-file HTML decks: narrative column, flowing dashed edges, journey dots,
+        semantic node colors, and a Cursor Agent Skill for production workflows.
+      </p>
+      <p class="lead" data-lang="zh">
+        单文件 HTML 演示：左栏叙事、虚线流动连线、光点 journey、语义化节点配色，
+        附带可生产的 Cursor Agent Skill 工作流。
+      </p>
+
+      <div class="actions">
+        <a class="btn btn-primary" href="demo.html" data-lang="en">Open live demo →</a>
+        <a class="btn btn-primary" href="demo.html" data-lang="zh">打开在线演示 →</a>
+        <a class="btn btn-secondary" href="https://github.com/jiruibabaya/motion-arch-slide" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-secondary" href="https://github.com/jiruibabaya/motion-arch-slide/blob/main/README.md" data-lang="en">Docs (EN)</a>
+        <a class="btn btn-secondary" href="https://github.com/jiruibabaya/motion-arch-slide/blob/main/README.zh-CN.md" data-lang="zh">文档 (中文)</a>
+      </div>
+
+      <div class="preview">
+        <img src="assets/preview.png" alt="" width="920" height="518" />
+      </div>
+
+      <div class="features">
+        <div class="feat entry">
+          <strong data-lang="en">Entry · cyan</strong>
+          <strong data-lang="zh">入口 · 青色</strong>
+          <span data-lang="en">Gateways, clients, ingress paths</span>
+          <span data-lang="zh">网关、客户端、主 ingress 路径</span>
+        </div>
+        <div class="feat core">
+          <strong data-lang="en">Core · orange</strong>
+          <strong data-lang="zh">核心 · 橙色</strong>
+          <span data-lang="en">Runtime, orchestrators, domain logic</span>
+          <span data-lang="zh">运行时、编排器、领域核心</span>
+        </div>
+        <div class="feat cap">
+          <strong data-lang="en">Cap · green</strong>
+          <strong data-lang="zh">能力 · 绿色</strong>
+          <span data-lang="en">Tools, adapters, persistence loops</span>
+          <span data-lang="zh">工具、适配器、持久化回环</span>
+        </div>
+      </div>
+
+      <p class="lead" style="margin-top:24px;margin-bottom:0;font-size:0.875rem;" data-lang="en">
+        Demo controls: <kbd>Space</kbd> pause animation · <kbd>F</kbd> fullscreen
+      </p>
+      <p class="lead" style="margin-top:24px;margin-bottom:0;font-size:0.875rem;" data-lang="zh">
+        演示快捷键：<kbd>Space</kbd> 暂停动画 · <kbd>F</kbd> 全屏
+      </p>
+    </section>
+
+    <footer>
+      <span data-lang="en">MIT License · </span>
+      <span data-lang="zh">MIT 许可证 · </span>
+      <a href="https://github.com/jiruibabaya">jiruibabaya</a>
+    </footer>
+  </div>
+
+  <script>
+    const KEY = 'mas-lang';
+    const html = document.documentElement;
+    const body = document.body;
+    const buttons = document.querySelectorAll('.lang button');
+
+    function setLang(lang) {
+      html.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      body.className = lang === 'zh' ? 'lang-zh' : 'lang-en';
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.set === lang));
+      try { localStorage.setItem(KEY, lang); } catch (_) {}
+    }
+
+    buttons.forEach(b => b.addEventListener('click', () => setLang(b.dataset.set)));
+
+    let saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (_) {}
+    const lang = saved || 'zh';
+    setLang(lang);
+  </script>
+</body>
+</html>
