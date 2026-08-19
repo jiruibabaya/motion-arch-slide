@@ -2,11 +2,11 @@
 
 # motion-arch-slide
 
-[**简体中文**](README.zh-CN.md) · English
+**中文** · [English](README.en.md)
 
-**Installable Agent Skill — full-viewport animated architecture slides for Cursor, Claude Code & Codex**
+**可安装的 Agent Skill — 为 Cursor、Claude Code、Codex 生成全屏动画架构讲解页**
 
-Single-file HTML · CSS dash flow · SVG journey dots · zero build
+单文件 HTML · CSS 虚线流动 · SVG 光点 · 零构建
 
 <br />
 
@@ -18,119 +18,122 @@ Single-file HTML · CSS dash flow · SVG journey dots · zero build
 npx motion-arch-slide
 ```
 
-[Install](#install) · [Usage](#usage) · [Docs](#documentation) · [npm](https://www.npmjs.com/package/motion-arch-slide)
+[安装](#安装) · [使用](#使用) · [文档](#文档) · [npm](https://www.npmjs.com/package/motion-arch-slide)
 
 </div>
 
 ---
 
-## Preview
+## 预览
 
 <p align="center">
-  <img src="assets/preview.png" alt="Architecture walkthrough slide — narrative, animated diagram, chapter bar" width="920" />
+  <img src="assets/preview.png" alt="架构讲解页 — 左栏叙事、动画架构图、底栏章节" width="920" />
 </p>
 
 <p align="center">
-  Reference output: <code>slides/deepseek-harness-v3.html</code> — open in any browser (<code>file://</code> works)
+  参考成片：<code>slides/deepseek-harness-v3.html</code> — 浏览器直接打开（<code>file://</code> 即可）
 </p>
 
 ---
 
-## What it is
+## 是什么
 
-**motion-arch-slide** is not a slide framework — it is an **Agent Skill** that teaches coding agents *how* to build screen-recording explainer pages:
+**motion-arch-slide** 不是 slide 框架，而是教 Agent **怎么规范地画**录屏用架构讲解页：
 
-| Encoded in the skill | Why it matters |
+| Skill 里写死的规则 | 作用 |
 |---|---|
-| Architecture vs flowchart vs sequence | Right diagram type per intent |
-| Semantic colors (`entry` / `core` / `cap`) | Consistent, readable diagrams |
-| Layout hard rules (grid, surfaces, routing) | Avoids known visual bugs |
-| Animation contract (dash + `animateMotion`) | Smooth loops without GSAP |
+| 架构图 / 流程图 / 时序图怎么选 | 避免图类型用错 |
+| 语义配色（`entry` / `core` / `cap`） | 节点一眼可辨 |
+| 布局硬约束（网格、surface、正交连线） | 避开已验证的踩坑 |
+| 动画契约（dash + `animateMotion`） | 不用 GSAP 也能流畅 |
 
-Ships with a **copy-ready template** and a **reference slide** (DeepSeek Harness walkthrough style).
+附带**可复制模板**和**参考成片**（DeepSeek Harness 拆解风格）。
 
 ---
 
-## Install
+## 安装
 
-**Requires [Node.js 18+](https://nodejs.org).**
+需要 **[Node.js 18+](https://nodejs.org)**。
 
 ```bash
 npx motion-arch-slide
 ```
 
-| Option | Effect |
+| 选项 | 说明 |
 |---|---|
-| `npx motion-arch-slide info` | Print install paths (dry run) |
-| `npx motion-arch-slide --agents cursor,claude` | Install subset of agents |
-| `npx motion-arch-slide --scope project` | Install into current repo (`.cursor/skills/`, `.claude/skills/`) |
+| `npx motion-arch-slide info` | 只看安装路径，不写入 |
+| `npx motion-arch-slide --agents cursor,claude` | 只装指定 Agent |
+| `npx motion-arch-slide --scope project` | 装到当前项目（团队共享） |
 
-**Install locations (user scope):**
+**默认安装位置（用户级）：**
 
-| Agent | Path |
+| Agent | 路径 |
 |---|---|
 | Cursor | `~/.cursor/skills/motion-arch-slide/` |
 | Claude Code | `~/.claude/skills/motion-arch-slide/` |
 | Codex | `~/.codex/skills/motion-arch-slide/` |
 
-More options → [INSTALL.md](INSTALL.md)
+更多方式 → [INSTALL.md](INSTALL.md)
 
-**Update the skill:** run `npx motion-arch-slide` again.
-
----
-
-## Usage
-
-1. **Install** (above) and start a **new agent turn**.
-2. Invoke the skill:
-   - Cursor / Claude Code: `@motion-arch-slide`
-   - Or: *"Use motion-arch-slide to create an architecture walkthrough slide for …"*
-3. Agent reads `SKILL.md` + `DESIGN.md`, copies `templates/slide-architecture.html`, fills narrative / nodes / edges.
-4. Open the generated HTML locally — no dev server required.
-
-**Example prompt:**
-
-> 用 motion-arch-slide，给 noetix-server 主链路做一页架构 slide，入口到 TTS，章节条 6 项。
+**更新 Skill：** 再执行一次 `npx motion-arch-slide`。
 
 ---
 
-## Documentation
+## 使用
 
-| Doc | Contents |
+1. **安装**（见上），开**新一轮** Agent 对话。
+2. 调用 Skill：
+   - Cursor / Claude Code：`@motion-arch-slide`
+   - 或说明：「用 motion-arch-slide 给 xxx 做一页架构 slide」
+3. Agent 读 `SKILL.md`、`DESIGN.md`，从 `templates/slide-architecture.html` 复制出片。
+4. 本地浏览器打开 HTML，无需起服务。
+
+**示例 prompt：**
+
+> 用 motion-arch-slide，给 noetix-server 主链路做一页架构 slide，从 WebSocket 到 TTS，底栏 6 章。
+
+---
+
+## 文档
+
+| 文件 | 内容 |
 |---|---|
-| [SKILL.md](SKILL.md) | Agent workflow, diagram decision table, semantic colors |
-| [DESIGN.md](DESIGN.md) | Hard constraints + acceptance checklist |
-| [INSTALL.md](INSTALL.md) | All install methods, flags, verification |
-| [AGENTS.md](AGENTS.md) | Entry pointer for Codex / generic agents |
-| [references/](references/) | Diagram types, colors, layout, animation details |
+| [SKILL.md](SKILL.md) | Agent 工作流、图表决策、语义色 |
+| [DESIGN.md](DESIGN.md) | 硬约束 + 验收清单 |
+| [INSTALL.md](INSTALL.md) | 安装方式、参数、验证 |
+| [AGENTS.md](AGENTS.md) | Codex / 通用 Agent 入口 |
+| [references/](references/) | 图表类型、配色、布局、动画细则 |
+| [README.en.md](README.en.md) | 英文说明 |
 
 ---
 
-## Repository layout
+## 仓库结构
 
 ```
 motion-arch-slide/
-├── SKILL.md                 # Agent entry point
+├── README.md                # 中文说明（默认）
+├── README.en.md             # English
+├── SKILL.md                 # Agent 入口
 ├── bin/motion-arch-slide.js # npx CLI
-├── templates/               # Start new slides here
-├── slides/                  # Reference outputs
-├── references/              # Skill reference docs
-└── scripts/                 # install wrappers (optional)
+├── templates/               # 新 slide 从此复制
+├── slides/                  # 参考成片
+├── references/              # Skill 参考文档
+└── scripts/                 # 可选安装脚本
 ```
 
 ---
 
-## Develop locally
+## 本地开发
 
 ```bash
 git clone https://github.com/jiruibabaya/motion-arch-slide.git
 cd motion-arch-slide
-npm run install-skill    # same as npx, from source
-npm test                 # prints install targets
+npm run install-skill
+npm test
 ```
 
 ---
 
-## License
+## 许可证
 
 [MIT](LICENSE) © 2026 [jiruibabaya](https://github.com/jiruibabaya)
