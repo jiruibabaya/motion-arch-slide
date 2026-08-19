@@ -6,7 +6,7 @@ description: >-
   background, and editorial text surfaces. Use when the user asks for architecture
   walkthrough slides, system diagram animations, PPT-style HTML decks, DeepSeek-style
   explainer pages, or choosing between architecture vs flowchart vs sequence diagrams.
-  Install: clone repo and run scripts/install-skill.ps1 or install-skill.sh.
+  Install: npx motion-arch-slide  (or npx github:jiruibabaya/motion-arch-slide)
 ---
 
 # Motion Arch Slide
@@ -115,16 +115,20 @@ motion-arch-slide/
 
 ## 安装（Agent Skill）
 
-本仓库是 **Skill 包**，安装后 Claude / Codex / Cursor 等 Agent 自动遵循本文件规范。
-
 ```bash
-git clone https://github.com/jiruibabaya/motion-arch-slide.git
-cd motion-arch-slide
-# Windows
-.\scripts\install-skill.ps1
-# macOS / Linux
-./scripts/install-skill.sh
+# 推荐：无需 clone
+npx motion-arch-slide
+# 或未发布 npm 前：
+npx github:jiruibabaya/motion-arch-slide
+
+# 项目内共享
+npx motion-arch-slide --scope project
+
+# 预览安装路径
+npx motion-arch-slide info
 ```
+
+也可 `git clone` 后 `npm run install-skill`。详见 [INSTALL.md](INSTALL.md)。
 
 | Agent | 用户目录 | 项目目录 |
 |---|---|---|
@@ -132,13 +136,7 @@ cd motion-arch-slide
 | Claude Code | `~/.claude/skills/motion-arch-slide/` | `.claude/skills/motion-arch-slide/` |
 | Codex | `~/.codex/skills/motion-arch-slide/` | — |
 
-**Codex 可选：** `install-skill-from-github.py --repo jiruibabaya/motion-arch-slide --path . --name motion-arch-slide`
-
-详细说明 → [INSTALL.md](INSTALL.md)
-
-**调用：** Cursor/Claude 用 `@motion-arch-slide`；或明确说「按 motion-arch-slide skill 做一页架构 slide」。
-
-**更新：** `git pull` 后重新运行安装脚本。
+**调用：** `@motion-arch-slide` · **更新：** 再跑一遍 `npx motion-arch-slide`
 
 ## 参考开源
 

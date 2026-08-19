@@ -1,0 +1,44 @@
+{
+  "name": "motion-arch-slide",
+  "version": "1.0.0",
+  "description": "Agent Skill for full-viewport animated architecture HTML slides — install to Cursor, Claude Code, and Codex",
+  "keywords": [
+    "cursor",
+    "claude",
+    "codex",
+    "agent-skill",
+    "architecture-diagram",
+    "html-slides"
+  ],
+  "homepage": "https://github.com/jiruibabaya/motion-arch-slide#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jiruibabaya/motion-arch-slide.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jiruibabaya/motion-arch-slide/issues"
+  },
+  "license": "MIT",
+  "author": "jiruibabaya",
+  "type": "commonjs",
+  "bin": {
+    "motion-arch-slide": "bin/motion-arch-slide.js"
+  },
+  "files": [
+    "bin",
+    "SKILL.md",
+    "AGENTS.md",
+    "DESIGN.md",
+    "INSTALL.md",
+    "references",
+    "templates",
+    "slides"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "install-skill": "node bin/motion-arch-slide.js install",
+    "test": "node bin/motion-arch-slide.js info"
+  }
+}

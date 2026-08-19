@@ -4,11 +4,12 @@
 
 [English](README.md) · **简体中文**
 
-**面向 Claude / Codex / Cursor 等 Agent 的全屏动画架构 slide Skill + 模板（HTML/CSS/SVG，零构建）。**
+**面向 Claude / Codex / Cursor 的 Agent Skill：全屏动画架构 slide（HTML/CSS/SVG，零构建）**
 
 <br />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-0e7490?style=for-the-badge)](LICENSE)
+[![npm](https://img.shields.io/badge/npx-motion--arch--slide-ea580c?style=for-the-badge)](https://www.npmjs.com/package/motion-arch-slide)
 [![Agent Skill](https://img.shields.io/badge/type-Agent%20Skill-059669?style=for-the-badge)](SKILL.md)
 
 [安装](#安装) · [SKILL.md](SKILL.md) · [设计规范](DESIGN.md)
@@ -24,92 +25,79 @@
 </p>
 
 <p align="center">
-  <sub>参考成片：<code>slides/deepseek-harness-v3.html</code> — 浏览器直接打开即可</sub>
+  <sub>参考成片：<code>slides/deepseek-harness-v3.html</code> — 浏览器直接打开</sub>
 </p>
 
 ---
 
 ## 是什么
 
-一个**可安装的 Agent Skill**，让 Claude、Codex、Cursor 等工具按统一规范产出录屏用架构讲解页：
-
-| 提供 | 不需要 |
-|---|---|
-| 全屏 PPT 式分栏布局 | Webpack / Vite |
-| 虚线流动 + 光点 journey | GSAP / Lottie |
-| 语义化节点配色 | 每次手调颜色 |
-| 每章单 HTML 文件 | 专用 slide 工具链 |
-
-Skill 里写死了：**画哪种图、用什么色、哪些布局不能碰、动画怎么接** — 不只是空模板。
+可安装的 **Agent Skill**，统一规范：画哪种图、语义配色、布局禁忌、动画契约。  
+适用于录屏讲解页，单 HTML 零构建。
 
 ---
 
 ## 安装
 
+### 推荐：`npx` 一行命令（无需 clone）
+
+```bash
+npx motion-arch-slide
+```
+
+尚未发布 npm 时，从 GitHub 直接运行：
+
+```bash
+npx github:jiruibabaya/motion-arch-slide
+```
+
+**常用选项：**
+
+```bash
+# 只装 Cursor + Claude
+npx motion-arch-slide --agents cursor,claude
+
+# 装到当前项目（团队共享）
+npx motion-arch-slide --scope project
+
+# 查看会装到哪些目录（不写入）
+npx motion-arch-slide info
+```
+
+需要 Node.js 18+。安装到 Cursor / Claude Code / Codex 的用户 skill 目录。
+
+### 其他方式
+
 ```bash
 git clone https://github.com/jiruibabaya/motion-arch-slide.git
 cd motion-arch-slide
+npm run install-skill
+# 或 .\scripts\install-skill.ps1
 ```
 
-**Windows（PowerShell）** — 一次装到 Cursor、Claude Code、Codex 用户目录：
+详见 [INSTALL.md](INSTALL.md)
 
-```powershell
-.\scripts\install-skill.ps1
-```
+### 安装后
 
-**macOS / Linux：**
-
-```bash
-chmod +x scripts/install-skill.sh
-./scripts/install-skill.sh
-```
-
-**仅当前项目**（团队仓库共享）：
-
-```powershell
-.\scripts\install-skill.ps1 -Scope project
-```
-
-**Codex**（内置安装器）：
-
-```bash
-python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
-  --repo jiruibabaya/motion-arch-slide --path . --name motion-arch-slide
-```
-
-完整说明 → [INSTALL.md](INSTALL.md)
-
-### 安装后怎么用
-
-| Agent | 调用方式 |
+| Agent | 调用 |
 |---|---|
-| **Cursor** | `@motion-arch-slide` 或说明「用 motion-arch-slide skill」 |
-| **Claude Code** | 从 `~/.claude/skills/` 自动加载；或 `@motion-arch-slide` |
-| **Codex** | 装到 `~/.codex/skills/` 后下一轮生效 |
+| **Cursor** | `@motion-arch-slide` |
+| **Claude Code** | `@motion-arch-slide`（从 `~/.claude/skills/` 加载） |
+| **Codex** | 下一轮对话自动加载 `~/.codex/skills/motion-arch-slide/` |
+
+**更新 Skill：** 再跑一遍 `npx motion-arch-slide`
 
 ---
 
-## Skill 包结构
+## 包结构
 
 ```
 motion-arch-slide/
-├── SKILL.md              ← Agent 入口（必需）
-├── DESIGN.md             ← 硬约束 + 验收清单
-├── INSTALL.md            ← 各 Agent 安装路径
-├── references/           ← 图表类型、配色、动画、布局
-├── templates/            ← 新 slide 从此复制
-├── slides/               ← 参考成片
-└── scripts/install-skill.*
+├── SKILL.md · DESIGN.md · INSTALL.md
+├── bin/motion-arch-slide.js    ← npx 入口
+├── references/ · templates/ · slides/
+└── package.json
 ```
-
----
-
-## 人工快速开始
-
-1. 先安装 Skill，让 Agent 遵守规范。
-2. 复制 `templates/slide-architecture.html` → `slides/my-topic-v1.html`
-3. 改叙事、节点、连线、底栏章节。
-4. 浏览器打开 HTML，`file://` 即可，无需服务器。
 
 ---
 
