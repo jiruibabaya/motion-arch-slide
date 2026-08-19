@@ -21,8 +21,7 @@
   "license": "MIT",
   "author": "jiruibabaya",
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "type": "commonjs",
   "bin": {
