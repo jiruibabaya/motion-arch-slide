@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>motion-arch-slide</title>
-  <meta name="description" content="Full-viewport HTML architecture slides with CSS/SVG animation and Cursor Agent Skill." />
+  <title>motion-arch-slide · 全屏架构讲解页</title>
+  <meta name="description" content="全屏 HTML 架构讲解页：CSS/SVG 动画 + Cursor Agent Skill。" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -170,13 +170,13 @@
     html.lang-en .lang button[data-set="en"] { /* active via JS */ }
   </style>
 </head>
-<body class="lang-en">
+<body class="lang-zh">
   <div class="wrap">
     <header>
       <div class="brand">motion-arch-slide</div>
       <div class="lang" role="group" aria-label="Language">
-        <button type="button" data-set="en" class="active">English</button>
-        <button type="button" data-set="zh">中文</button>
+        <button type="button" data-set="en">English</button>
+        <button type="button" data-set="zh" class="active">中文</button>
       </div>
     </header>
 
@@ -261,7 +261,7 @@
 
     let saved = null;
     try { saved = localStorage.getItem(KEY); } catch (_) {}
-    const lang = saved || (navigator.language.startsWith('zh') ? 'zh' : 'en');
+    const lang = saved || 'zh';
     setLang(lang);
   </script>
 </body>

@@ -2,7 +2,7 @@
 
 # motion-arch-slide
 
-**English** · [**简体中文**](README.zh-CN.md)
+[**简体中文**](README.zh-CN.md) · [English](README.md)
 
 **Full-viewport HTML slides with animated architecture diagrams — zero build, open in browser.**
 
